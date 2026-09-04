@@ -26,13 +26,13 @@
     <p class="sub">S. Symeonidou &amp; A. Theodoropoulos - WebXR remediation - two synced screens</p></div>
   <div id="stats"></div>
   <div id="status">-</div><div id="dbg">debug: -</div>
-  <div id="hint">drag to <b>look</b> (only decides the ending) - <b>A/B</b> or <b>trigger</b> to step in - <b>Esc</b> back<br><b>F</b> game-mode - <b>S</b> save data</div>
+  <div id="hint">drag to <b>look</b> (decides the ending) - <b>A/B</b>/<b>trigger</b> step in - <b>Esc</b> back<br><b>turn around</b> for your attention mirror - <b>F</b> game-mode - <b>S</b> save</div>
   <div id="portalMsg"></div><div id="arrow"></div><div id="summary"></div>
   <div id="gate"><div id="boot">Loading...</div>
     <h2 style="display:none">The Cigar(t) - Chained Diegetic Displays</h2>
-    <p style="display:none">Two screens, one story across the space. Just <b>looking</b> writes your montage and, at the close, decides the ending - tend the environment and the flowers bloom; stay with the smoker and the bloom fails. To step inside a screen press <b>A</b>/<b>B</b> (or the controller <b>trigger</b>). <b>S</b> saves session data.</p>
+    <p style="display:none">Two screens, one story across the space. Just <b>looking</b> writes your montage and, at the close, decides the ending - tend the environment and the flowers bloom; stay with the smoker and the bloom fails. <b>Turn around</b> to see your attention mirror. <b>A</b>/<b>B</b> (or <b>trigger</b>) step inside a screen; <b>S</b> saves data.</p>
     <div class="btn" style="display:none">\u25b6 Click to start</div></div>
-  <div id="err">If screens are black: serve via a local server (not double-click), and keep the .mp4 files next to this HTML.</div>
+  <div id="err">If screens are black: serve via a local server (not double-click) or use the GitHub Pages link, and keep the .mp4 files next to this HTML.</div>
 
   <a-scene background="color:#0c0c10" renderer="colorManagement:true" vr-mode-ui="enabled:true">
     <a-assets>
@@ -51,27 +51,58 @@
     <a-entity id="ctrlR" laser-controls="hand: right"></a-entity>
     <a-entity id="ctrlL" laser-controls="hand: left"></a-entity>
     <a-cylinder position="0 0 -0.2" radius="2.6" height="0.06" color="#141319" material="roughness:1"></a-cylinder>
-    <a-light type="ambient" color="#5a554a" intensity="0.8"></a-light>
+    <a-light type="ambient" color="#5a554a" intensity="0.85"></a-light>
     <a-light id="ember" type="point" color="#d9642c" intensity="1.1" position="0 0.35 -1.1" distance="7"></a-light>
     <a-sphere position="0 0.12 -1.1" radius="0.08" color="#d9642c" material="emissive:#d9642c;emissiveIntensity:1;shader:flat"></a-sphere>
-    <a-entity id="wrap1" position="-0.95 1.55 -1.7" rotation="0 17 0">
+
+    <a-entity id="wrap1" position="-0.95 1.6 -1.7" rotation="0 15 0">
       <a-plane class="pulse" width="1.72" height="1.02" material="emissive:#d9642c;emissiveIntensity:1;shader:flat;opacity:0" position="0 0 -0.02"></a-plane>
       <a-video id="screen1" class="gazeable" src="#vid1" width="1.6" height="0.9"></a-video>
       <a-sound id="snd1" sound="src:#cueA;positional:true;volume:8;refDistance:5;maxDistance:50;rolloffFactor:0.4"></a-sound>
     </a-entity>
-    <a-entity id="wrap2" position="0.95 1.55 -1.7" rotation="0 -17 0">
+    <a-entity id="wrap2" position="0.95 1.6 -1.7" rotation="0 -15 0">
       <a-plane class="pulse" width="1.72" height="1.02" material="emissive:#d9642c;emissiveIntensity:1;shader:flat;opacity:0" position="0 0 -0.02"></a-plane>
       <a-video id="screen2" class="gazeable" src="#vid2" width="1.6" height="0.9"></a-video>
       <a-sound id="snd2" sound="src:#cueB;positional:true;volume:8;refDistance:5;maxDistance:50;rolloffFactor:0.4"></a-sound>
     </a-entity>
+
+    <a-entity id="mirror" position="0 1.6 1.95" rotation="0 180 0">
+      <a-plane width="1.6" height="0.9" attention-mirror material="shader:flat"></a-plane>
+    </a-entity>
+
     <a-entity director></a-entity>
   </a-scene>
 <script>
 function dbg(m){var d=document.getElementById('dbg'); if(d)d.textContent='debug: '+m;}
 var HANDOFFS = [ {t:0,to:'1'}, {t:14,to:'2'}, {t:28,to:'1'}, {t:42,to:'2'}, {t:56,to:'1'} ];
-var CATCH_WINDOW = 1.8;
-var BRANCH_AT = 62.5;
-var BRANCH_SCREEN = '2';
+var CATCH_WINDOW = 1.8; var BRANCH_AT = 62.5; var BRANCH_SCREEN = '2';
+
+AFRAME.registerComponent('attention-mirror',{
+  init(){ const c=document.createElement('canvas'); c.width=512; c.height=288;
+    this.ctx=c.getContext('2d'); this.canvas=c; this.tex=new THREE.CanvasTexture(c); this.tex.colorSpace=THREE.SRGBColorSpace;
+    const apply=()=>{const m=this.el.getObject3D('mesh'); if(m){m.material.map=this.tex; m.material.needsUpdate=true;}};
+    if(this.el.getObject3D('mesh')) apply(); else this.el.addEventListener('object3dset',apply); },
+  tick(){ var d=window.__director; var k=this.ctx, W=512,H=288;
+    k.fillStyle='#d8c39a'; k.fillRect(0,0,W,H);
+    k.globalAlpha=.06; for(let i=0;i<70;i++){k.fillStyle=i%2?'#b89b68':'#efe2c4'; k.fillRect((i*57%W),(i*89%H),2,2);} k.globalAlpha=1;
+    k.fillStyle='#1a1712'; k.textAlign='left'; k.font='bold 26px Helvetica, Arial, sans-serif'; k.fillText('YOUR MONTAGE', 30, 50);
+    k.font='13px Helvetica, Arial, sans-serif'; k.fillStyle='#7a6f5c'; k.fillText('attention mirror \u2014 your gaze writes the edit', 30, 72);
+    var t1=d?d.t1:0, t2=d?d.t2:0, tot=(t1+t2)||1, l=Math.round(t1/tot*100);
+    var bx=30, by=104, bw=W-60, bh=42;
+    k.fillStyle='#1a1712'; k.fillRect(bx,by,Math.round(bw*l/100),bh);
+    k.fillStyle='#cf7a3a'; k.fillRect(bx+Math.round(bw*l/100),by,bw-Math.round(bw*l/100),bh);
+    k.strokeStyle='#1a1712'; k.lineWidth=1.5; k.strokeRect(bx,by,bw,bh);
+    k.fillStyle='#f4efe6'; k.font='bold 15px Helvetica, Arial, sans-serif'; k.textAlign='left'; k.fillText('L '+l+'%', bx+8, by+27);
+    k.textAlign='right'; k.fillText('R '+(100-l)+'%', bx+bw-8, by+27); k.textAlign='left';
+    k.fillStyle='#1a1712'; k.font='14px Helvetica, Arial, sans-serif';
+    k.fillText('discovered handoffs: '+(d?d.discovered:0)+'/'+(d?d.total:0), 30, 183);
+    var end=d?d.ending:null;
+    if(end){ k.font='bold 30px Helvetica, Arial, sans-serif'; k.fillStyle= end==='bloom'?'#2e6b32':'#8a3b1a';
+      k.fillText(end==='bloom'?'\u2192 BLOOM':'\u2192 WITHER', 30, 236);
+      k.fillStyle='#7a6f5c'; k.font='13px Helvetica, Arial, sans-serif'; k.fillText('your attention chose this ending', 30, 260); }
+    else { k.fillStyle='#a89a80'; k.font='13px Helvetica, Arial, sans-serif'; k.fillText('the ending is decided by where you look\u2026', 30, 236); }
+    this.tex.needsUpdate=true; }
+});
 
 AFRAME.registerComponent('hover-reticle',{ init(){ var el=this.el;
   el.addEventListener('raycaster-intersection',function(){ el.setAttribute('material','color','#ffffff'); el.setAttribute('scale','1.6 1.6 1.6'); });
@@ -112,25 +143,17 @@ AFRAME.registerComponent('director',{
  flashPulse(t){ var p=this.S[t].pulse; if(p)p.setAttribute('material','opacity', this.reduced?0.4:0.6); },
  resetStats(){ this.t1=0; this.t2=0; this.discovered=0; this.caught={}; this.window=null; this.freezeUsed=false; this.branchDecided=false; this.ending=null; },
  recordRun(){ var tot=this.t1+this.t2, l=tot?Math.round(this.t1/tot*100):0;
-   this.log.push({ run:++this.runIndex, gazeLeftSec:+this.t1.toFixed(1), gazeRightSec:+this.t2.toFixed(1),
-     leftPct:l, rightPct:tot?100-l:0, discovered:this.discovered, total:this.total, caught:Object.keys(this.caught).map(Number), ending:this.ending, freezeUsed:this.freezeUsed }); },
- summary(){ var tot=this.t1+this.t2, l=tot?Math.round(this.t1/tot*100):50;
-   var end=this.ending?(' \u00b7 ending: '+(this.ending==='bloom'?'bloom':'wither')):'';
+   this.log.push({ run:++this.runIndex, gazeLeftSec:+this.t1.toFixed(1), gazeRightSec:+this.t2.toFixed(1), leftPct:l, rightPct:tot?100-l:0, discovered:this.discovered, total:this.total, caught:Object.keys(this.caught).map(Number), ending:this.ending, freezeUsed:this.freezeUsed }); },
+ summary(){ var tot=this.t1+this.t2, l=tot?Math.round(this.t1/tot*100):50; var end=this.ending?(' \u00b7 ending: '+(this.ending==='bloom'?'bloom':'wither')):'';
    this.banner('Your run \u2014 montage  L '+l+'% / R '+(100-l)+'%   \u00b7   discovered '+this.discovered+'/'+this.total+end+'   \u00b7   press S to save', 5600); },
- banner(txt,ms){ var b=document.getElementById('summary'); if(!b)return; b.textContent=txt; b.style.display='block';
-   clearTimeout(this._bt); this._bt=setTimeout(function(){b.style.display='none';},ms||1400); },
+ banner(txt,ms){ var b=document.getElementById('summary'); if(!b)return; b.textContent=txt; b.style.display='block'; clearTimeout(this._bt); this._bt=setTimeout(function(){b.style.display='none';},ms||1400); },
  updateStats(){ var tot=this.t1+this.t2, l=tot?Math.round(this.t1/tot*100):50; var s=document.getElementById('stats');
    if(s)s.innerHTML='gaze&nbsp; L '+l+'%&nbsp; R '+(100-l)+'%&nbsp;&nbsp;\u2022&nbsp;&nbsp;discovered '+this.discovered+'/'+this.total+'&nbsp;&nbsp;\u2022&nbsp;&nbsp;run '+(this.runIndex+1); },
- exportData(){ var data={ exportedAt:new Date().toISOString(), piece:'The Cigar(t) - Chained Diegetic Displays',
-     handoffs:HANDOFFS, catchWindowSec:CATCH_WINDOW, branchAtSec:BRANCH_AT, completedRuns:this.log,
-     inProgress:{ gazeLeftSec:+this.t1.toFixed(1), gazeRightSec:+this.t2.toFixed(1), discovered:this.discovered, total:this.total, ending:this.ending } };
-   try{ var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-     var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cigart_session_'+Date.now()+'.json'; document.body.appendChild(a); a.click();
-     setTimeout(function(){document.body.removeChild(a);},150); this.banner('Saved session data ('+this.log.length+' run(s)) to Downloads',2600);
+ exportData(){ var data={ exportedAt:new Date().toISOString(), piece:'The Cigar(t) - Chained Diegetic Displays', handoffs:HANDOFFS, catchWindowSec:CATCH_WINDOW, branchAtSec:BRANCH_AT, completedRuns:this.log, inProgress:{ gazeLeftSec:+this.t1.toFixed(1), gazeRightSec:+this.t2.toFixed(1), discovered:this.discovered, total:this.total, ending:this.ending } };
+   try{ var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cigart_session_'+Date.now()+'.json'; document.body.appendChild(a); a.click(); setTimeout(function(){document.body.removeChild(a);},150); this.banner('Saved session data ('+this.log.length+' run(s)) to Downloads',2600);
    }catch(e){ dbg('export error: '+e.message); } },
  tick(time,dt){
-   if(!this.master){return;} dt=(dt||16)/1000;
-   var arrow=document.getElementById('arrow');
+   if(!this.master){return;} dt=(dt||16)/1000; var arrow=document.getElementById('arrow');
    if(this.portalOpen){ if(arrow)arrow.style.display='none'; return; }
    if(this.started){ if(this.gazed==='1')this.t1+=dt; else if(this.gazed==='2')this.t2+=dt; }
    this.updateStats();
@@ -138,38 +161,25 @@ AFRAME.registerComponent('director',{
      else if(this.gazed==='2'){ if(this.v2.paused)this.v2.play().catch(()=>{}); if(!this.v1.paused)this.v1.pause(); }
      else { if(!this.v1.paused)this.v1.pause(); if(!this.v2.paused)this.v2.pause(); }
    } else { if(this.v1.paused&&this.master.currentTime>0)this.v1.play().catch(()=>{}); if(this.v2.paused&&this.master.currentTime>0)this.v2.play().catch(()=>{}); }
-   var mt=this.master.currentTime||0, idx=-1;
-   for(var i=0;i<HANDOFFS.length;i++){ if(HANDOFFS[i].t<=mt) idx=i; }
+   var mt=this.master.currentTime||0, idx=-1; for(var i=0;i<HANDOFFS.length;i++){ if(HANDOFFS[i].t<=mt) idx=i; }
    if(idx!==this.hi && idx>=0){ this.hi=idx; this.active=HANDOFFS[idx].to; this.ping(this.active); this.flashPulse(this.active);
-     if(HANDOFFS[idx].t>0){ this.window={active:this.active, key:idx, until:mt+CATCH_WINDOW}; }
-     this.setStatus('Handoff -> Screen '+this.active+'  ('+Math.round(mt)+'s)'); }
-   if(this.window && !this.caught[this.window.key]){
-     if(mt<=this.window.until){ if(this.gazed===this.window.active){ this.caught[this.window.key]=true; this.discovered++; this.flashPulse(this.window.active);
-       this.banner('\u2726 caught the handoff to Screen '+this.window.active+'  ('+this.discovered+'/'+this.total+')',1300); } }
-     else { this.window=null; } }
+     if(HANDOFFS[idx].t>0){ this.window={active:this.active, key:idx, until:mt+CATCH_WINDOW}; } this.setStatus('Handoff -> Screen '+this.active+'  ('+Math.round(mt)+'s)'); }
+   if(this.window && !this.caught[this.window.key]){ if(mt<=this.window.until){ if(this.gazed===this.window.active){ this.caught[this.window.key]=true; this.discovered++; this.flashPulse(this.window.active); this.banner('\u2726 caught the handoff to Screen '+this.window.active+'  ('+this.discovered+'/'+this.total+')',1300); } } else { this.window=null; } }
    if(this.started && !this.branchDecided && mt>=BRANCH_AT){ this.branchDecided=true;
-     if(this.t1>this.t2){ this.ending='wither';
-       try{ this.vAlt.currentTime=this.v2.currentTime; this.vAlt.play().catch(()=>{}); }catch(e){}
-       this.S[BRANCH_SCREEN].scr.setAttribute('src','#vidAlt');
-       this.banner('\u2726 your attention stayed with the smoker \u2014 the bloom fails',3600); }
+     if(this.t1>this.t2){ this.ending='wither'; try{ this.vAlt.currentTime=this.v2.currentTime; this.vAlt.play().catch(()=>{}); }catch(e){} this.S[BRANCH_SCREEN].scr.setAttribute('src','#vidAlt'); this.banner('\u2726 your attention stayed with the smoker \u2014 the bloom fails',3600); }
      else { this.ending='bloom'; this.banner('\u2726 you tended the environment \u2014 the flowers bloom',3600); }
      dbg('branch: '+this.ending+'  (L'+this.t1.toFixed(0)+'s / R'+this.t2.toFixed(0)+'s)'); }
-   ['1','2'].forEach(t=>{ var p=this.S[t].pulse; if(!p)return; var o=parseFloat(p.getAttribute('material').opacity||0);
-     if(o>0){ o=Math.max(0,o-0.02); p.setAttribute('material','opacity',o); } });
-   if(arrow){ if(!this.camEl)this.camEl=document.querySelector('[camera]');
-     var wp=new THREE.Vector3(); this.S[this.active].wrap.object3D.getWorldPosition(wp);
+   ['1','2'].forEach(t=>{ var p=this.S[t].pulse; if(!p)return; var o=parseFloat(p.getAttribute('material').opacity||0); if(o>0){ o=Math.max(0,o-0.02); p.setAttribute('material','opacity',o); } });
+   if(arrow){ if(!this.camEl)this.camEl=document.querySelector('[camera]'); var wp=new THREE.Vector3(); this.S[this.active].wrap.object3D.getWorldPosition(wp);
      var lp=this.camEl.object3D.worldToLocal(wp.clone()); var hz=Math.atan2(lp.x,-lp.z)*180/Math.PI, ah=Math.abs(hz);
-     if(ah<30){ arrow.style.display='none'; } else { arrow.style.display='block';
-       arrow.textContent = ah>118 ? ('\u21bb turn around \u2014 Screen '+this.active) : (hz>0 ? ('Screen '+this.active+' \u25b6 look right') : ('\u25c0 Screen '+this.active+' look left')); } }
+     if(ah<30){ arrow.style.display='none'; } else { arrow.style.display='block'; arrow.textContent = ah>118 ? ('\u21bb turn around \u2014 Screen '+this.active) : (hz>0 ? ('Screen '+this.active+' \u25b6 look right') : ('\u25c0 Screen '+this.active+' look left')); } }
  },
- toggleFreeze(){ this.freeze=!this.freeze; if(this.freeze)this.freezeUsed=true;
-   this.setStatus(this.freeze?'GAME-MODE: gaze pacing (non-viewed screen pauses)':'Common timeline (both play together)'); dbg(this.freeze?'freeze ON':'freeze OFF'); },
+ toggleFreeze(){ this.freeze=!this.freeze; if(this.freeze)this.freezeUsed=true; this.setStatus(this.freeze?'GAME-MODE: gaze pacing (non-viewed screen pauses)':'Common timeline (both play together)'); dbg(this.freeze?'freeze ON':'freeze OFF'); },
  enter(tag){ if(this.portalOpen)return; this.portalOpen=tag; dbg('ENTER '+tag);
    var o=this.S[tag].wrap.object3D; o.position.set(0,1.6,-1.25); o.rotation.set(0,0,0); o.scale.set(1.7,1.7,1.7);
    this.S[tag==='1'?'2':'1'].wrap.setAttribute('visible',false);
    document.querySelector('a-scene').setAttribute('background','color','#161014'); document.querySelector('#ember').setAttribute('intensity',0.4);
-   var m=document.getElementById('portalMsg'); m.textContent='Inside Screen '+tag+' - press Esc to step back'; m.style.display='block';
-   this.setStatus('Immersed in Screen '+tag+' - Esc to step back'); },
+   var m=document.getElementById('portalMsg'); m.textContent='Inside Screen '+tag+' - press Esc to step back'; m.style.display='block'; this.setStatus('Immersed in Screen '+tag+' - Esc to step back'); },
  exit(){ if(!this.portalOpen)return; var tag=this.portalOpen; this.portalOpen=false; dbg('EXIT '+tag);
    var o=this.S[tag].wrap.object3D, r=this.orig[tag]; o.position.copy(r.p); o.rotation.copy(r.r); o.scale.copy(r.s);
    this.S['1'].wrap.setAttribute('visible',true); this.S['2'].wrap.setAttribute('visible',true);
