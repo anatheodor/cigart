@@ -50,23 +50,17 @@
     </a-entity>
     <a-entity id="ctrlR" laser-controls="hand: right"></a-entity>
     <a-entity id="ctrlL" laser-controls="hand: left"></a-entity>
-    <a-circle position="0 0.02 -0.2" radius="1.7" rotation="-90 0 0" color="#0e0e12" material="shader:flat;opacity:0.55;transparent:true"></a-circle>
+    <a-cylinder position="0 0 -0.2" radius="2.6" height="0.06" color="#141319" material="roughness:1"></a-cylinder>
     <a-light type="ambient" color="#5a554a" intensity="0.85"></a-light>
-    <a-light id="ember" type="point" color="#d9642c" intensity="0.95" position="0 0.35 -1.1" distance="6"></a-light>
+    <a-light id="ember" type="point" color="#d9642c" intensity="1.1" position="0 0.35 -1.1" distance="7"></a-light>
     <a-sphere position="0 0.12 -1.1" radius="0.08" color="#d9642c" material="emissive:#d9642c;emissiveIntensity:1;shader:flat"></a-sphere>
 
-    <a-entity id="smoke">
-      <a-sphere radius="0.05" position="-0.06 0.5 -1.15" color="#cbbfa8" material="shader:flat;transparent:true;opacity:0.10" animation="property:object3D.position.y;from:0.5;to:2.1;dir:alternate;loop:true;dur:8000;easing:easeInOutSine"></a-sphere>
-      <a-sphere radius="0.035" position="0.05 0.8 -1.05" color="#cbbfa8" material="shader:flat;transparent:true;opacity:0.08" animation="property:object3D.position.y;from:0.8;to:2.3;dir:alternate;loop:true;dur:9500;easing:easeInOutSine"></a-sphere>
-      <a-sphere radius="0.045" position="-0.02 1.1 -1.25" color="#cbbfa8" material="shader:flat;transparent:true;opacity:0.09" animation="property:object3D.position.y;from:1.1;to:2.6;dir:alternate;loop:true;dur:11000;easing:easeInOutSine"></a-sphere>
-      <a-sphere radius="0.03" position="0.1 0.65 -1.2" color="#cbbfa8" material="shader:flat;transparent:true;opacity:0.07" animation="property:object3D.position.y;from:0.65;to:2.0;dir:alternate;loop:true;dur:7000;easing:easeInOutSine"></a-sphere>
-    </a-entity>
-    <a-entity id="wrap1" position="-0.82 1.6 -1.9" rotation="0 12 0">
+    <a-entity id="wrap1" position="-0.95 1.6 -1.7" rotation="0 15 0">
       <a-plane class="pulse" width="1.72" height="1.02" material="emissive:#d9642c;emissiveIntensity:1;shader:flat;opacity:0" position="0 0 -0.02"></a-plane>
       <a-video id="screen1" class="gazeable" src="#vid1" width="1.6" height="0.9"></a-video>
       <a-sound id="snd1" sound="src:#cueA;positional:true;volume:8;refDistance:5;maxDistance:50;rolloffFactor:0.4"></a-sound>
     </a-entity>
-    <a-entity id="wrap2" position="0.82 1.6 -1.9" rotation="0 -12 0">
+    <a-entity id="wrap2" position="0.95 1.6 -1.7" rotation="0 -15 0">
       <a-plane class="pulse" width="1.72" height="1.02" material="emissive:#d9642c;emissiveIntensity:1;shader:flat;opacity:0" position="0 0 -0.02"></a-plane>
       <a-video id="screen2" class="gazeable" src="#vid2" width="1.6" height="0.9"></a-video>
       <a-sound id="snd2" sound="src:#cueB;positional:true;volume:8;refDistance:5;maxDistance:50;rolloffFactor:0.4"></a-sound>
